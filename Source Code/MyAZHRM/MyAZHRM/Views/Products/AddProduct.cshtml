@@ -1,0 +1,810 @@
+﻿@model IEnumerable<MyAZHRM.Models.PackageModulesModel>
+
+@{
+    ViewBag.Title = "Add Products";
+}
+
+<style>
+
+    .card-style 
+    {
+        background-color: #73C6B6;
+    }
+
+    .card-border 
+    {
+        border: 1px solid #73C6B6;
+    }
+
+    .btnStyle 
+    {
+        width:120px;
+    }
+
+    .btnStyle2 
+    {
+        /*width:245px;*/
+        width:100%;
+    }
+
+    .inmodal .modal-header 
+    {
+        padding: 20px 10px;
+    }
+
+</style>
+
+
+
+@*2023/Nov/23 - Script Changes*@
+@*2023/Nov/22 - Shihan*@
+@*<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>*@
+@*<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>*@
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+
+@*2023/Nov/22 - Shihan*@
+<div class="modal inmodal" id="mdlProductDetails" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="mdlTitle" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" aria-hidden="true" onclick="closeModal();">
+                    ×
+                </button>
+
+                <h4 class="modal-title" id="mdlTitle">
+                    Product Overview
+                </h4>
+            </div>
+
+            <div id="mdlBody" class="modal-body">
+
+                @*<fieldset>
+
+                    <div class="form-group">
+                        <label id="lblCmpName">Company Name</label>
+                        <input id="txtCmpName" type="text" class="form-control" placeholder="Company Name" />
+                    </div>
+
+                    <div class="form-group">
+                        <label id="lblCountry">Country</label>
+                        <input id="txtCountry" type="text" class="form-control" placeholder="Country" />
+                    </div>
+
+                    <div class="form-group">
+                        <label id="lblPackage">Package</label>
+                        <input id="txtPackage" type="text" class="form-control" placeholder="Package" />
+                    </div>
+
+                    <div class="form-group">
+                        <label id="lblNoOfEmps">No of Employees</label>
+                        <input id="txtNoOfEmps" type="number" class="form-control" placeholder="No of Employees" min="1" step="1" />
+                    </div>
+
+                </fieldset>*@
+
+            </div>
+
+            <div class="modal-footer">
+
+                @*<div class="row">
+                    <div class="col-md-6">
+                        <label id="lblMsg" style="color:green;"></label>
+                    </div>
+                </div>*@
+
+                <div class="row" style="margin:0px !important; padding-right: 20px;">               
+                        <div class="col-md-4">
+                            @*<input id="btnUpgrd" class="btn btn-primary" type="button" value="Upgrade" style="width:120px;" />*@
+                            @*@Html.ActionLink("Upgrade", "RecordUpdate", "Products", null, new { @class = "btn btn-primary btnStyle" })*@
+                            <input id="btnEdit" class="btn btn-primary" type="button" value="Edit" style="width: 120px;" />
+                        </div>
+                        <div class="col-md-4">
+                            @*<input id="btnReqCancel" class="btn btn-warning" type="button" value="Cancel Request" style="width:120px;" />*@
+                            @*@Html.ActionLink("Cancel Request", "CancelRequest", "Products", null, new { @class = "btn btn-warning btnStyle" })*@
+                            <input id="btnReqCancel" class="btn btn-warning" type="button" value="Cancel Request" style="width: 120px;" />
+                        </div>
+                        <div class="col-md-4">
+                            <input id="btnClose" class="btn btn-danger" type="button" value="Close" style="width:120px;" onclick="closeModal();" />
+                        </div>
+                 </div>
+            </div>
+
+         </div>
+    </div>
+</div>
+
+
+
+@*Common For All Pages*@
+@*<div class="row">
+<div class="col-lg-12">*@
+<div id="divMain" class="ibox" style="width:100%!important;">
+    <div class="ibox-title">
+        <h2 class="font-bold">Add Products</h2>
+    </div>
+    <div class="ibox-content">
+        <div class="row">
+
+            @{
+                var lstPackages = Model.Select(c => c.PackageName).Distinct().ToList();
+            }
+
+
+            @*2023/Dec/07*@
+            @{
+                //var lstPackageId = Model.Select(c => c.PackageId).Distinct().ToList();
+
+                var btnStyleDisable = "";
+
+                if (Request.QueryString["PackageId"] != null)
+                {
+                    var lstProductStatus = Model.Where(c => c.PackageId == Convert.ToInt32(Request.QueryString["PackageId"].ToString().Trim())).Select(c => c.Status).Distinct().ToList();
+
+                    if (lstProductStatus.Count > 0)
+                    {
+                        foreach (var itmProductStatus in lstProductStatus)
+                        {
+                            if (itmProductStatus == MyAZHRM.Models.Globals.CUS_PRD_CANCEL_REQ_PENDING.ToString().Trim())
+                            {
+                                btnStyleDisable = "disabled='disabled'";
+                            }
+                        }
+                    }
+                }
+            }
+
+
+
+            @foreach (var itmPackageName in lstPackages)
+            {
+                var divId = string.Format("packageDiv_{0}", itmPackageName.Replace(" ", "_"));
+                
+                //2023/11/28--       
+                <div id="@Html.Raw(divId)" class="package-div col-md-3">
+               
+                @{
+                  var style = "";      
+                  if (Request.QueryString["ProductId"] != null && Request.QueryString["PackageId"] != null)
+                  {
+                      
+                    var lstPackStatus = Model.Where(c => c.PackageName == @itmPackageName && c.PackageId == Convert.ToInt32(Request.QueryString["PackageId"].ToString().Trim())).Select(c => c.Status).Distinct().ToList();
+                                        
+                    foreach (var itmPackStatus in lstPackStatus)
+                    {
+                        if (string.IsNullOrEmpty(itmPackStatus) == false)
+                        {
+                            style = "background-color: #73b1ca; color: white;";
+                        }
+
+                    }
+                  }                     
+                }
+
+                @*<div class="card mb-3 card-border" style="max-width: 18rem;">*@
+                <div class="card mb-3 card-border" style="max-width: 18rem; @style">
+
+
+                <div class="card-header text-white text-center card-style">
+                   <h2 class="font-bold">@itmPackageName</h2>
+                </div>
+                <ul class="list-group list-group-flush">
+
+                @foreach (var itmModuleName in Model.Where(c => c.PackageName == itmPackageName))
+                {
+                   <li class="list-group-item"> @itmModuleName.ModuleName </li>                  
+                }
+
+                </ul>
+                </div>
+
+
+
+                   @*2023/Dec/07*@ 
+                   @{
+                       var lstPackageId = Model.Where(c => c.PackageName == @itmPackageName).Select(c => c.PackageId).Distinct().ToList(); 
+                   }
+                     
+                   @foreach (var itmPackageId in lstPackageId)
+                   {
+
+                      @*<div class="col-md-3 form-group">*@
+                      <div class="mb-3" style="max-width: 18rem;">
+
+                      @{
+                         var ProductId = "0";
+                         var QryStrngPackageId = "0";
+                         var QryStrngProductId = "0";
+                         if (Request.QueryString["ProductId"] != null && Request.QueryString["PackageId"] != null)
+                         {
+
+                            ProductId = Request.QueryString["ProductId"].ToString().Trim();
+                            QryStrngPackageId = Request.QueryString["PackageId"].ToString().Trim();
+                            QryStrngProductId = Request.QueryString["ProductId"].ToString().Trim();
+                            
+                            var lstStatus = Model.Where(c => c.PackageId == Convert.ToInt32(Request.QueryString["PackageId"].ToString().Trim()) && c.PackageId == @itmPackageId).Select(c => c.Status).Distinct().ToList();
+                             
+                            if (lstStatus.Count > 0)
+                            {
+                               foreach (var itmStatus in lstStatus)
+                               {
+
+                                  if (string.IsNullOrEmpty(itmStatus) == true)
+                                  {
+                                    <input type="button" onclick="showModal('@ProductId', '@itmPackageId', '@QryStrngPackageId', '@QryStrngProductId')" value="Choose Plan" class="btn btn-primary btnStyle2" @btnStyleDisable />
+                                  }
+                                  else
+                                  {
+                                    <input type="button" onclick="showModal('@ProductId', '@itmPackageId', '@QryStrngPackageId', '@QryStrngProductId')" value="Upgrade" class="btn btn-success btnStyle2" />
+                                  }
+                               }
+                            }
+                            else
+                            {
+                              <input type="button" onclick="showModal('@ProductId', '@itmPackageId', '@QryStrngPackageId', '@QryStrngProductId')" value="Choose Plan" class="btn btn-primary btnStyle2" @btnStyleDisable />
+                            }
+                         }
+                         else
+                         {
+                           <input type="button" onclick="showModal('@ProductId', '@itmPackageId', '@QryStrngPackageId', '@QryStrngProductId')" value="Choose Plan" class="btn btn-primary btnStyle2" @btnStyleDisable />
+                         }
+                      }
+
+                      </div>
+                      @*</div>*@
+                       
+                   }
+
+
+
+                </div>
+            }
+
+        </div>
+
+
+
+
+
+
+
+
+
+
+        @*2023/Dec/07*@
+        @*<div class="row">
+
+            @{
+                var lstPackageId = Model.Select(c => c.PackageId).Distinct().ToList();
+
+                var btnStyleDisable = "";
+
+                if (Request.QueryString["PackageId"] != null)
+                { 
+                   var lstProductStatus = Model.Where(c => c.PackageId == Convert.ToInt32(Request.QueryString["PackageId"].ToString().Trim())).Select(c => c.Status).Distinct().ToList();
+
+                   if (lstProductStatus.Count > 0)
+                   {
+                     foreach (var itmProductStatus in lstProductStatus)
+                     {
+                        if (itmProductStatus == MyAZHRM.Models.Globals.CUS_PRD_CANCEL_REQ_PENDING.ToString().Trim())
+                        {
+                            btnStyleDisable = "disabled='disabled'";
+                        }
+                     }
+                   }
+                } 
+            }
+
+            @foreach (var itmPackageId in lstPackageId)
+            {
+                
+                <div class="col-md-3 form-group">
+                <div class="mb-3" style="max-width: 18rem;">
+
+              @{      
+                  var ProductId = "0";       
+                  var QryStrngPackageId = "0";         
+                  var QryStrngProductId = "0";       
+                  if (Request.QueryString["ProductId"] != null && Request.QueryString["PackageId"] != null)
+                  {
+                      
+                    ProductId = Request.QueryString["ProductId"].ToString().Trim();
+                    QryStrngPackageId = Request.QueryString["PackageId"].ToString().Trim();
+                    QryStrngProductId = Request.QueryString["ProductId"].ToString().Trim();
+                    var lstStatus = Model.Where(c => c.PackageId == Convert.ToInt32(Request.QueryString["PackageId"].ToString().Trim()) && c.PackageId == @itmPackageId).Select(c => c.Status).Distinct().ToList();
+                            
+                    if (lstStatus.Count > 0)
+                    {
+                      foreach (var itmStatus in lstStatus)
+                      {
+                          
+                        if (string.IsNullOrEmpty(itmStatus) == true)
+                        {
+                          <input type="button" onclick="showModal('@ProductId', '@itmPackageId', '@QryStrngPackageId', '@QryStrngProductId')" value="Choose Plan" class="btn btn-primary btnStyle2" @btnStyleDisable />
+                        }
+                        else
+                        {
+                          <input type="button" onclick="showModal('@ProductId', '@itmPackageId', '@QryStrngPackageId', '@QryStrngProductId')" value="Upgrade" class="btn btn-success btnStyle2" />
+                        }
+                      }
+                    }
+                    else
+                    {
+                      <input type="button" onclick="showModal('@ProductId', '@itmPackageId', '@QryStrngPackageId', '@QryStrngProductId')" value="Choose Plan" class="btn btn-primary btnStyle2" @btnStyleDisable />
+                    }
+                  }
+                  else
+                  {
+                     <input type="button" onclick="showModal('@ProductId', '@itmPackageId', '@QryStrngPackageId', '@QryStrngProductId')" value="Choose Plan" class="btn btn-primary btnStyle2" @btnStyleDisable />
+                  }
+              }
+
+                </div>
+                </div>
+
+            }
+
+        </div>*@
+
+
+
+
+
+
+
+
+
+
+    </div>
+
+</div>
+
+
+
+@*</div>
+</div>*@
+
+
+
+@*2023/Nov/24 - Test*@ 
+@*<input type="button" onclick="showModal(1);" value="Test Button" class="btn btn-primary" />*@
+
+@Html.Hidden("hdfProductId", null, new { @id = "hdfProductId" }) 
+@Html.Hidden("hdfUpdProdId", null, new { @id = "hdfUpdProdId" }) 
+@Html.Hidden("hdfUpdPackId", null, new { @id = "hdfUpdPackId" }) 
+
+
+
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+
+
+@*2023/Nov/22 - Shihan*@
+<script type="text/javascript">
+
+    var hdfProductId = $("#hdfProductId").val();
+    var hdfUpdProdId = $("#hdfUpdProdId").val();
+    var hdfUpdPackId = $("#hdfUpdPackId").val();
+
+    //2023/11/28---chami
+    var divIdArray = [];
+    window.onload = function ()
+    {
+        var globalMaxHeight = 0;
+        // Select all elements with class "package-div"
+        var packageDivs = $(".package-div");
+
+        // Loop through each selected element
+        packageDivs.each(function () {
+            // Get the id attribute of each element
+            var divId = $(this).attr("id");
+
+
+            // Add the divId to the array
+            divIdArray.push(divId);
+        });
+
+
+
+        divIdArray.forEach(function (divId) {
+            var cardheight = $(".card");
+            var elements = document.querySelectorAll("#" + divId);
+            var maxHeight = 0;
+           
+            // Find the maximum height among elements with the same id
+            elements.forEach(function (element) {
+                maxHeight = Math.max(maxHeight, element.offsetHeight);
+                //alert(maxHeight);
+            });
+            globalMaxHeight = Math.max(globalMaxHeight, maxHeight);
+
+        });
+
+
+        // Set the height of all elements with the class "card" to the global maximum height
+        var cardElements = document.querySelectorAll(".card");
+        cardElements.forEach(function (card) {
+            card.style.height = globalMaxHeight + "px";
+        });
+
+    }
+
+    function showModal(ProductId, PackageId, QryStrngPackageId, QryStrngProductId)
+    {
+        if (QryStrngPackageId != PackageId)
+        {
+            ProductId = 0;
+        }
+
+        $.ajax({
+            url: "/Products/CustomerProductDetails",
+            type: "GET",
+            data: { ProductId: ProductId, PackageId: PackageId },
+            success: function (data)
+            {
+                hdfProductId = QryStrngProductId;
+                $('#mdlBody').html(data);
+                $('#mdlProductDetails').modal('show');
+                clearModalUI();
+                disableButtons();
+            },
+            error: function (data)
+            {
+                alert('Error');
+            }
+        });
+
+        return false;
+    }
+
+    function closeModal()
+    { 
+        clearModalUI();
+        $('#mdlBody').html('');
+        $('#mdlProductDetails').modal('hide');
+
+        if (hdfProductId == 0)
+        {
+            window.location.href = '/Products/MyProducts';
+        }
+        else
+        {
+            // location.reload();
+            if (hdfUpdProdId != 0 && hdfUpdProdId != null && hdfUpdPackId != 0 && hdfUpdPackId != null)
+            {
+                window.location.search = "ProductId=" + hdfUpdProdId + "&PackageId=" + hdfUpdPackId;
+            }
+        }
+
+        hdfProductId = 0;
+        return false;
+    }
+
+    $("#btnEdit").click(function (event)
+    {
+        var btnEditVal = $("#btnEdit").val();
+
+        $("#divSuccess").html('');
+        $('#divSuccess').hide();
+        $("#divError").html('');
+        $('#divError').hide();
+
+        if (btnEditVal == "Edit")
+        {
+            event.preventDefault();
+            $('.inputDisabled').prop("disabled", false);
+            $("#btnEdit").val("Upgrade");
+            $("#btnReqCancel").prop("disabled", true);
+        }
+        else if (btnEditVal == "Upgrade")
+        {
+            var isValidCmpName = validateCmpName();
+            var isValidEmpCount = validateEmpCount();
+
+            if (isValidCmpName == true && isValidEmpCount == true)
+            {
+                var customerId = $("#CustomerId").val();
+                var packageId = $("#PackageId").val();
+
+                var productId = $("#ProductId").val();
+                if (productId == 0 && (hdfProductId != 0 && hdfProductId != null))
+                {
+                    productId = hdfProductId;
+                }
+
+                var companyName = $("#CompanyName").val();
+                var employeeCount = $("#EmployeeCount").val();
+                var packageName = $("#PackageName").val();
+
+                var CustomerProduct =
+                {
+                    customerId: customerId,
+                    packageId: packageId,
+                    productId: productId,
+                    companyName: companyName,
+                    employeeCount: employeeCount
+                }
+
+                $.ajax({
+                    url: "/Products/UpdProductDetails",
+                    type: "POST",
+                    dataType: "json",
+                    data: CustomerProduct,
+                    success: function (result)
+                    {
+                        var lstRsltMsgs = result.lstRslt1;
+                        var isSuccess = lstRsltMsgs[0];
+                        var erMsg = lstRsltMsgs[1];
+
+                        var lstRsltObj = result.lstRslt2;
+                        var objCustProd = new Object();
+                        objCustProd = lstRsltObj[0];
+
+                        if (isSuccess == "True")
+                        {
+                            //$('#mdlBody').html(objCustProd);
+                            $("#CustomerId").val(objCustProd.CustomerId);
+                            $("#PackageId").val(objCustProd.PackageId);
+                            $("#ProductId").val(objCustProd.ProductId);
+                            $("#CompanyName").val(objCustProd.CompanyName);
+                            $("#Country").val(objCustProd.Country);
+                            $("#PackageName").val(objCustProd.PackageName);
+                            $("#EmployeeCount").val(objCustProd.EmployeeCount);
+                         
+                            $('.inputDisabled').prop("disabled", true);
+                            $("#btnEdit").val("Edit");
+                            $("#btnReqCancel").prop("disabled", false);
+
+                            var successMsg = packageName + ' package has been successfully upgraded';
+                            $("#divSuccess").html(successMsg);
+                            $('#divSuccess').show();
+                            $('#divSuccess').delay(4000).fadeOut(3000);
+
+                            hdfUpdProdId = objCustProd.ProductId;
+                            hdfUpdPackId = objCustProd.PackageId;
+                        }
+                        else
+                        {
+                            $("#divError").html(erMsg);
+                            $('#divError').show();
+                            $('#divError').delay(4000).fadeOut(3000);
+                        }
+                    },
+                    error: function (result)
+                    {
+                        var list = result.lstRslt1;
+                        var erMsg = list[1];
+
+                        $("#divError").html(erMsg);
+                        $('#divError').show();
+                        $('#divError').delay(4000).fadeOut(3000);
+                    }
+                })
+            }
+        }
+
+        return false;
+    });
+
+    function validateCmpName()
+    {
+        var isValid = false;
+
+        var cmpNameCntrl = $("#CompanyName");
+        var cmpNameVal = cmpNameCntrl.val();
+
+        cmpNameCntrl.parent().removeClass('has-error');
+        cmpNameCntrl.parent().removeClass('has-success');
+        cmpNameCntrl.parent().find("small").remove();
+
+        if (cmpNameVal == '')
+        {
+            cmpNameCntrl.parent().addClass('has-error');
+            cmpNameCntrl.parent().append('<small class="help-block" style="color: red;">Company Name is required</small>');
+            isValid = false;
+        }
+        else
+        {
+            cmpNameCntrl.parent().addClass('has-success');
+            cmpNameCntrl.prop('disabled', false);
+            isValid = true;
+        }
+
+        return isValid;
+    }
+
+    function validateEmpCount()
+    {
+        var isValid = false;
+
+        var empCountCntrl = $("#EmployeeCount");
+        var empCountVal = empCountCntrl.val();
+
+        empCountCntrl.parent().removeClass('has-error');
+        empCountCntrl.parent().removeClass('has-success');
+        empCountCntrl.parent().find("small").remove();
+
+        if (empCountVal == '' || empCountVal == '0' || empCountVal == '0.0')
+        {
+            empCountCntrl.parent().addClass('has-error');
+            empCountCntrl.parent().append('<small class="help-block" style="color: red;">Employee Count is required</small>');
+            isValid = false;
+        }
+        else if (empCountVal < 0)
+        {
+            empCountCntrl.parent().addClass('has-error');
+            empCountCntrl.parent().append('<small class="help-block" style="color: red;">Invalid Input</small>');
+            isValid = false;
+        }
+        else if (empCountVal % 1 != 0)
+        {
+            empCountCntrl.parent().addClass('has-error');
+            empCountCntrl.parent().append('<small class="help-block" style="color: red;">Invalid Input</small>');
+            isValid = false;
+        }
+        else if (empCountVal.includes("-") || empCountVal.includes("+"))
+        {
+            empCountCntrl.parent().addClass('has-error');
+            empCountCntrl.parent().append('<small class="help-block" style="color: red;">Invalid Input</small>');
+            isValid = false;
+        }
+        else
+        {
+            var lastDigit = empCountVal.toString().slice(-1);
+            var firstDigit = empCountVal.toString().substring(0, 1);
+            if (lastDigit == '.' || firstDigit == '.')
+            {
+                empCountCntrl.parent().addClass('has-error');
+                empCountCntrl.parent().append('<small class="help-block" style="color: red;">Invalid Input</small>');
+                isValid = false;
+            }
+            else
+            {
+                empCountCntrl.parent().addClass('has-success');
+                isValid = true;
+            }
+        }
+
+        return isValid;
+    }
+
+    function clearModalUI()
+    {
+        var cmpNameCntrl = $("#CompanyName");
+        cmpNameCntrl.parent().removeClass('has-error');
+        cmpNameCntrl.parent().removeClass('has-success');
+        cmpNameCntrl.parent().find("small").remove();
+
+        var empCountCntrl = $("#EmployeeCount");
+        empCountCntrl.parent().removeClass('has-error');
+        empCountCntrl.parent().removeClass('has-success');
+        empCountCntrl.parent().find("small").remove();
+
+        $('.inputDisabled').prop("disabled", true);
+        $("#btnEdit").val("Edit");
+
+        $("#divSuccess").html('');
+        $('#divSuccess').hide();
+        $("#divError").html('');
+        $('#divError').hide();
+
+        document.getElementById("lblMsg").style.display = "none";
+        $("#lblMsg").html("");
+    }
+
+    $("#btnReqCancel").click(function (event)
+    {
+        swal({
+            title: "Are you sure you need to cancel this package ?",
+            type: "warning",
+
+            showConfirmButton: true,
+            confirmButtonColor: "#18a689",
+            confirmButtonText: "Confirm",
+            closeOnConfirm: false,
+
+            showCancelButton: true,
+            cancelButtonColor: "#bd2130",
+            cancelButtonText: "Cancel",
+            closeOnCancel: false,
+
+            allowEscapeKey: false
+        },
+             function (isConfirm) {
+                 if (isConfirm) {
+                     var customerId = $("#CustomerId").val();
+                     var packageId = $("#PackageId").val();
+                     var productId = $("#ProductId").val();
+                     var companyName = $("#CompanyName").val();
+                     var packageName = $("#PackageName").val();
+
+                     var CancelRequest =
+                     {
+                         customerId: customerId,
+                         packageId: packageId,
+                         productId: productId,
+                         companyName: companyName,
+                         packageName: packageName
+                     }
+
+                     $.ajax({
+                         url: "/Products/CancelRequest",
+                         type: "POST",
+                         dataType: "json",
+                         data: CancelRequest,
+                         success: function (result) {
+                             var lstRsltMsgs = result.lstRslt1;
+                             var isSuccess = lstRsltMsgs[0];
+                             var erMsg = lstRsltMsgs[1];
+
+                             if (isSuccess == "True") 
+                             {
+                                 $("#btnEdit").prop("disabled", true);
+                                 $("#btnReqCancel").prop("disabled", true);
+
+                                 document.getElementById("lblMsg").style.display = "inline-block";
+                                 $("#lblMsg").html("Package cancel request pending");
+
+                                 var successMsg = packageName + ' package cancel request successfully sent.';
+                                 swal("Success", successMsg, "success");
+                             }
+                             else
+                             {
+                                 swal("Failed", erMsg, "error");
+                             }
+                         },
+                         error: function (result)
+                         {
+                             var list = result.lstRslt1;
+                             var erMsg = list[1];
+
+                             swal("Failed", erMsg, "error");
+                         }
+                     })
+                 }
+                 else
+                 {
+                     swal.close();
+                 }
+             });
+
+        return false;
+    });
+
+    function disableButtons()
+    {
+        var status = $("#Status").val();
+        var companyName = $("#CompanyName").val();
+        var employeeCount = $("#EmployeeCount").val();
+
+        if (status == "PENDING CANCEL REQUEST")
+        {
+            $("#btnEdit").prop("disabled", true);
+            $("#btnReqCancel").prop("disabled", true);
+
+            document.getElementById("lblMsg").style.display = "inline-block";
+            $("#lblMsg").html("Package cancel request pending");
+        }
+        else
+        {
+            document.getElementById("lblMsg").style.display = "none";
+            $("#lblMsg").html("");
+
+            $("#btnEdit").prop("disabled", false);
+
+            if (companyName == '' && employeeCount == '0')
+            {
+                $("#btnReqCancel").prop("disabled", true);
+            }
+            else
+            {
+                $("#btnReqCancel").prop("disabled", false);
+            }           
+        }
+    }
+
+</script>

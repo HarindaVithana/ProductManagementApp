@@ -1,0 +1,906 @@
+﻿@model MyAZHRM.Models.CustomerModel
+@{
+    ViewBag.Title = "Update Details";
+}
+
+@Styles.Render("~/CustomCSS/AutocompleteCSS.css")
+<style>
+    ul {
+        list-style-type: none;
+        /*color: indianred;*/
+        /*background-color: white;*/
+        /*padding: 50px;*/
+    }
+
+    .input-validation-error {
+        border: 1px solid red;
+    }
+
+    .ui-autocomplete {
+        max-height: 200px;
+        overflow-y: auto; /* prevent horizontal scrollbar */
+        overflow-x: hidden; /* add padding to account for vertical scrollbar */
+        z-index: 1000 !important;
+        width: 50%;
+        position: static;
+    }
+
+    .inmodal .modal-header {
+        padding: 20px 10px;
+    }
+
+    /*.modal-content{
+        padding: 20px;
+    }*/
+
+    .field-icon {
+        float: right;
+        margin-left: -25px;
+        margin-right: 5px;
+        margin-top: -25px;
+        position: relative;
+        z-index: 2;
+    }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+
+@*Common For All Pages*@
+@*<div class="row">
+    <div class="col-lg-12">*@
+<div class="ibox" style="width:100%!important;">
+    <div class="ibox-title">
+        <h2 class="font-bold">Update Details</h2>
+    </div>
+    <div class="ibox-content">
+        @using (Html.BeginForm())
+        {
+            <div class="alert-danger" id="errout" style="padding:10px; border-radius:5px; display:none;">
+            </div>
+            <div class="alert-success" id="successout" style="padding: 10px; border-radius: 5px; display: none;">
+            </div>
+            @Html.AntiForgeryToken()
+            <fieldset>
+                @Html.TextBoxFor(m => m.Id, htmlAttributes: new { @class = "form-control", @disabled = "true", @type = "hidden" })
+                
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Name)
+                    @Html.TextBoxFor(m => m.Name, htmlAttributes: new { @class = "form-control inputDisabled", @placeholder = "Name", @disabled = "true" })
+                    <small>@Html.ValidationMessageFor(m => m.Name, "", new { style = "color: #950202; text-align: left; width:100%", @id = "valMsgName" })</small>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Email)
+                    @Html.TextBoxFor(m => m.Email, htmlAttributes: new { @class = "form-control", @disabled = "true" })
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Phone, "Phone No")
+                    @Html.TextBoxFor(m => m.Phone, htmlAttributes: new { @class = "form-control inputDisabled", @placeholder = "Telephone", @disabled = "true" })
+                    <small>@Html.ValidationMessageFor(m => m.Phone, "", new { style = "color: #950202; text-align: left; width:100%;", @id = "valMsgTelephone" })</small>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Address)
+                    @Html.TextBoxFor(m => m.Address, htmlAttributes: new { @class = "form-control inputDisabled", @placeholder = "Company Address", @disabled = "true" })
+                    <small>@Html.ValidationMessageFor(m => m.Address, "", new { style = "color: #950202; text-align: left; width:100%;", @id = "valMsgAddress" })</small>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Country)
+                    @Html.TextBoxFor(model => model.Country, htmlAttributes: new { @class = "form-control inputDisabled", @placeholder = "Country", @disabled = "true" })
+                    <small>@Html.ValidationMessageFor(m => m.Country, "", new { style = "color: #950202; text-align: left; width:100%;", @id = "valMsgCountry" })</small>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Currency)
+                    @Html.TextBoxFor(model => model.Currency, htmlAttributes: new { @class = "form-control inputDisabled", @placeholder = "Currency", @disabled = "true" })
+                    <small>@Html.ValidationMessageFor(m => m.Currency, "", new { style = "color: #950202; text-align: left; width:100%;", @id = "valMsgCurrency" })</small>
+                </div>
+                <div class="row">
+                    <div class="col-md-8"></div>
+                    <div class="col-md-2">
+                        <input class="btn btn-primary block full-width m-b" type="submit" value="Edit" id="edit" style="width: 152px !important;"/>
+                    </div>
+                    <div class="col-md-2">
+                        <input class="btn btn-warning block full-width m-b" type="submit" value="Change Password" id="chpwd" style="width: 152px !important;" />
+                    </div>                   
+                </div>
+            </fieldset>
+        }
+    </div>
+</div>
+<div class="modal inmodal" id="mdlpwchange" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="myModalLabelcon1" aria-hidden="true">
+    <div class="modal-dialog" style="width:90%!important;">
+        <div class="modal-content" style="">
+            <div class="modal-header">
+                <button type="button" class="close" aria-hidden="true" id="xbtn">
+                    ×
+                </button>
+                <h4 class="modal-title" id="mdlTitle">
+                    Change Password
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="alert-danger" id="outputbox" style="padding:10px; border-radius:5px;">
+                </div>
+                <div class="alert-success" id="outboxsuccess" style="padding:10px; border-radius:5px;">
+                </div>
+                <br />
+                <div class="form-group">
+                    <input type="password" class="form-control" placeholder="Current Password" id="curpw" required />
+                    <span class="password-showhide">
+                        <span class="fa fa-fw fa-eye field-icon show-password"></span>
+                        <span class="fa fa-fw fa-eye-slash field-icon hide-password" style="display:none"></span>
+                    </span>
+                    <small><span style="color: #950202; text-align: left;" id="valMsgCurPassword"></span></small>
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" placeholder="New Password" id="newpw" required />
+                    <span class="password-showhide">
+                        <span class="fa fa-fw fa-eye field-icon show-password"></span>
+                        <span class="fa fa-fw fa-eye-slash field-icon hide-password" style="display:none"></span>
+                    </span>
+                    <small><span style="color: #950202; text-align: left;" id="valMsgNewPassword"></span></small>
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" placeholder="Confirm Password" id="confpw" required />
+                    <span class="password-showhide">
+                        <span class="fa fa-fw fa-eye field-icon show-password"></span>
+                        <span class="fa fa-fw fa-eye-slash field-icon hide-password" style="display:none"></span>
+                    </span>
+                    <small><span style="color: #950202; text-align: left;" id="valMsgConfPassword"></span></small>
+                </div>
+            </div>
+            <div class="modal-footer" style="display:block; padding-left:30px; padding-right:30px;">
+                <div class="row">
+                    
+                    <div class="col-6">
+                        <input class="btn btn-primary block full-width m-b" type="submit" value="Submit" id="subchpw" />
+                    </div>
+                    <div class="col-6">
+                        <input class="btn btn-danger block full-width m-b" type="submit" value="Close" id="cancelpw" />
+                    </div>                  
+                </div>
+            </div>           
+        </div>
+    </div>
+</div>
+@*2023/Nov/23 - Script Changes*@
+@*@section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+}*@
+
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+<script type="text/javascript">
+    if (window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href);
+    }
+
+    $(document).ready(function () {
+        $("#errout").hide();
+        $("#successout").hide();
+
+        $("#Country").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/Account/RegisterCountryList",
+                    type: "POST",
+                    dataType: "json",
+                    data: { Prefix: request.term },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return { label: item, value: item };
+                        }))
+                    },
+                    error: function (data) {
+                        console.log(data.error)
+                    }
+                })
+            },
+            messages: {
+                noResults: "", results: ""
+            }
+        });
+
+        $("#Currency").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/Account/RegisterCurrencyList",
+                    type: "POST",
+                    dataType: "json",
+                    data: { Prefix: request.term },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return { label: item, value: item };
+                        }))
+                    },
+                    error: function (data) {
+                        console.log(data.error)
+                    }
+                })
+            },
+            messages: {
+                noResults: "", results: ""
+            }
+        });
+
+        //Show hide password
+        $(".show-password, .hide-password").on('click', function () {
+            var passwordId = $(this).parents('div:first').find('input').attr('id');
+            if ($(this).hasClass('show-password')) {
+                $("#" + passwordId).attr("type", "text");
+                $(this).parent().find(".show-password").hide();
+                $(this).parent().find(".hide-password").show();
+            } else {
+                $("#" + passwordId).attr("type", "password");
+                $(this).parent().find(".hide-password").hide();
+                $(this).parent().find(".show-password").show();
+            }
+        });
+    })
+
+    $("#edit").click(function (event) {
+        $("#chpwd").prop("disabled", true);
+
+        var editVal = $("#edit").val()
+
+        if (editVal == "Edit") {
+            event.preventDefault();
+            $('.inputDisabled').prop("disabled", false);
+            $("#edit").val("Update");
+        }
+        else {
+            var name = $("#Name").val();
+            var id = $("#Id").val();
+            var phone = $("#Phone").val();
+            var address = $("#Address").val();
+            var country = $("#Country").val();
+            var currency = $("#Currency").val();
+
+            var nameval = validateUserName();                   
+            var telval = validateTelephone();
+            var addval = validateAddress();                      
+            var countval = validateCountry();               
+            var curval = validateCurrency();
+            
+            if (nameval && telval && addval && countval && curval) {
+                $.ajax({
+                    url: "/Profile/UpdateProfile",
+                    type: "POST",
+                    dataType: "text",
+                    data: { Id: id, Name: name, Phone: phone, Address: address, Country: country, Currency: currency },
+                    success: function (data) {
+                        if (data == "success") {
+                            $('.inputDisabled').prop("disabled", true);
+                            $("#edit").val("Edit");
+                            $("#chpwd").prop("disabled", false);
+
+                            // Notification
+                            $("#successout").html("Record Updated");
+                            $('#successout').show();
+                            $('#successout').delay(4000).fadeOut(3000);
+
+                            // Clear classes
+                            var nameCtrl = $("#Name");
+                            nameCtrl.parent().removeClass('has-error');
+                            nameCtrl.parent().removeClass('has-success');
+
+                            var phoneCtrl = $("#Phone");
+                            phoneCtrl.parent().removeClass('has-error');
+                            phoneCtrl.parent().removeClass('has-success');
+
+                            var cmpNameCntrl = $("#Address");
+                            cmpNameCntrl.parent().removeClass('has-error');
+                            cmpNameCntrl.parent().removeClass('has-success');
+
+                            var countryCtrl = $("#Country");
+                            countryCtrl.parent().removeClass('has-error');
+                            countryCtrl.parent().removeClass('has-success');
+
+                            var currencyCtrl = $("#Currency");
+                            currencyCtrl.parent().removeClass('has-error');
+                            currencyCtrl.parent().removeClass('has-success');
+                        }
+                        else if (data == "Invalid Country") {
+                            $("#valMsgCountry").html("Invalid Country.");
+                            $("#Country").addClass("input-validation-error");
+                        }
+                        else if (data == "Invalid Currency") {
+                            $("#valMsgCurrency").html("Invalid Currency.");
+                            $("#Currency").addClass("input-validation-error")
+                        }
+                        else {
+                            $("#errout").html("Error: Invalid data");
+                            $('#errout').show();
+                            $('#errout').delay(4000).fadeOut(3000);
+                        }
+                    },
+                    error: function (data) {
+                        $("#errout").html(data);
+                        $('#errout').show();
+                        $('#errout').delay(4000).fadeOut(3000);
+                    }
+                })
+            }
+        }
+        return false;
+    });
+
+    $("#chpwd").click(function (event) {
+        $('#mdlpwchange').modal('show');
+        $('#outputbox').hide();
+        $('#outboxsuccess').hide();
+        return false;
+    });
+
+    $("#xbtn").click(function (event) {
+        $("#curpw").val("");
+        $("#newpw").val("");
+        $("#confpw").val("");
+        $('#mdlpwchange').modal('hide');
+
+        //Empty Boxes
+        var curpassCtrl = $("#curpw");
+        curpassCtrl.parent().find("small").remove();
+        curpassCtrl.parent().removeClass('has-error');
+        curpassCtrl.parent().removeClass('has-success');
+
+        var passwordCtrl = $("#newpw");
+        passwordCtrl.parent().find("small").remove();
+        passwordCtrl.parent().removeClass('has-error');
+        passwordCtrl.parent().removeClass('has-success');
+
+        var confPwCtrl = $("#confpw");
+        confPwCtrl.parent().find("small").remove();
+        confPwCtrl.parent().removeClass('has-error');
+        confPwCtrl.parent().removeClass('has-success');
+
+        return false;
+    });
+
+    $("#cancelpw").click(function (event) {
+        $("#curpw").val("");
+        $("#newpw").val("");
+        $("#confpw").val("");
+        $('#mdlpwchange').modal('hide');
+
+        emptyInputs();
+
+        return false;
+    });
+
+    function emptyInputs() {
+        //Empty Boxes
+        var curpassCtrl = $("#curpw");
+        curpassCtrl.parent().find("small").remove();
+        curpassCtrl.parent().removeClass('has-error');
+        curpassCtrl.parent().removeClass('has-success');
+
+        var passwordCtrl = $("#newpw");
+        passwordCtrl.parent().find("small").remove();
+        passwordCtrl.parent().removeClass('has-error');
+        passwordCtrl.parent().removeClass('has-success');
+
+        var confPwCtrl = $("#confpw");
+        confPwCtrl.parent().find("small").remove();
+        confPwCtrl.parent().removeClass('has-error');
+        confPwCtrl.parent().removeClass('has-success');
+    }
+
+    $("#subchpw").click(function (event) {
+        var curPass = $("#curpw").val();
+        var newPass = $("#newpw").val();
+        var confPass = $("#confpw").val();
+        var pw = validatePassword(); 
+        var confpw = validateConfPassword(); 
+        var curpw = validateCurPassword();
+      
+        if (curpw && pw && confpw) {
+            $("#curpw").val("");
+            $("#newpw").val("");
+            $("#confpw").val("");
+
+            $.ajax({
+                url: "/Profile/UpdatePassword",
+                type: "POST",
+                dataType: "text",
+                data: { Current: curPass, NewPass: newPass, ConfPass: confPass },
+                success: function (data) {
+                    emptyInputs();
+
+                    if (data == "invalid")
+                    {
+                        var erMsg = "New password cannot be the same as old password";
+                        swal("Failed", erMsg, "error");
+                    }
+                    else if(data == "Error")
+                    {
+                        var erMsg = "Current password is incorrect";
+                        swal("Failed", erMsg, "error");
+                    }
+                    else
+                    {
+                        var successMsg = "Password Successfully Updated";
+                        swal("Success", successMsg, "success");
+                        setTimeout(function () {
+                            window.location.replace("/Account/LogOff");
+                        }, 3000);
+                    }                   
+                },
+                error: function (data) {
+                    emptyInputs();
+
+                    var erMsg = data;
+                    swal("Failed", erMsg, "error");
+                }
+            })
+        }
+        return false;
+    });
+
+    $("#newpw").on("keyup", function () {
+        validatePassword();
+    });
+
+    $("#confpw").on("keyup", function () {
+        validateConfPassword();
+    });
+
+    $("#curpw").on("keyup", function () {
+        validateCurPassword();
+    });
+
+    function validateCurPassword() {
+        var all_pass = true;
+        var curpassCtrl = $("#curpw");
+        var curpassword = $("#curpw").val();
+
+        curpassCtrl.parent().removeClass('has-error');
+        curpassCtrl.parent().removeClass('has-success');
+        curpassCtrl.parent().find("small").remove();
+
+        if (curpassword == "") {
+            curpassCtrl.parent().addClass('has-error');
+            curpassCtrl.parent().append('<small class="help-block" style="color: red;">Current Password is required</small>');
+            all_pass = false;
+        }
+        else
+        {
+            curpassCtrl.parent().addClass('has-success');
+            curpassCtrl.prop('disabled', false);
+        }
+        return all_pass;
+    }
+
+    function validatePassword() {
+        var password = $("#newpw").val();
+        var passwordCtrl = $("#newpw");
+        var all_pass = true;
+
+        var uppercase = password.match(/[A-Z]/);
+        var regExp = password.match(/[_\-!\";,#.@@:]/);
+        var number = password.match(/[0-9]/);
+
+        passwordCtrl.parent().removeClass('has-error');
+        passwordCtrl.parent().removeClass('has-success');
+        passwordCtrl.parent().find("small").remove();
+
+        if (password == "") {
+            passwordCtrl.parent().addClass('has-error');
+            passwordCtrl.parent().append('<small class="help-block" style="color: red;">Password is required</small>');
+            all_pass = false;
+        }
+        //Length check
+        else if (password.length < 6 || password.length > 20) {
+            passwordCtrl.parent().addClass('has-error');
+            passwordCtrl.parent().append('<small class="help-block" style="color: red;">Password Must be Between 6 and 20 Characters</small>');
+            all_pass = false;
+        }
+        //Include a number
+        else if (!number) {
+            passwordCtrl.parent().addClass('has-error');
+            passwordCtrl.parent().append('<small class="help-block" style="color: red;">Passwords Must Contain Numbers</small>');
+            all_pass = false;
+        }
+            //upper lowercase 
+        else if (!uppercase) {
+            passwordCtrl.parent().addClass('has-error');
+            passwordCtrl.parent().append('<small class="help-block" style="color: red;">Passwords Must Contain Upper Case Letters</small>');
+            all_pass = false;
+        }
+            //Special chr
+        else if (!regExp) {
+            passwordCtrl.parent().addClass('has-error');
+            passwordCtrl.parent().append('<small class="help-block" style="color: red;">Passwords Must Contain Special Characters</small>');
+            all_pass = false;
+        }
+
+        if (all_pass) {
+            passwordCtrl.parent().addClass('has-success');
+            passwordCtrl.prop('disabled', false);
+        }
+        return all_pass
+    }
+
+    function validateConfPassword() {
+        all_pass = true;
+        var password = $("#newpw").val();
+        var confPassword = $("#confpw").val();
+        var confPwCtrl = $("#confpw");
+
+        confPwCtrl.parent().removeClass('has-error');
+        confPwCtrl.parent().removeClass('has-success');
+        confPwCtrl.parent().find("small").remove();
+
+        if (confPassword.length == 0) {
+            confPwCtrl.parent().addClass('has-error');
+            confPwCtrl.parent().append('<small class="help-block" style="color: red;">Confirm Password is required</small>');
+            all_pass = false;
+        }
+        else if (password != confPassword && password != '') {
+            confPwCtrl.parent().addClass('has-error');
+            confPwCtrl.parent().append('<small class="help-block" style="color: red;">Password and confirmation password do not match</small>');
+            all_pass = false;
+        }
+        else {
+            confPwCtrl.parent().addClass('has-success');
+            confPwCtrl.prop('disabled', false);
+        }
+
+        return all_pass;
+    }
+
+    $("#Name").on("keyup", function () {
+        validateUserName();
+    });
+
+    $("#Phone").on("keyup", function () {
+        validateTelephone();
+    });
+
+    $("#Address").on("keyup", function () {
+        validateAddress();
+    });
+
+    $("#Country").on("keyup", function ()
+    {
+        validateCountry();
+    });
+
+    $("#Country").on("change", function ()
+    {
+        validateCountry();
+    });
+
+    $("#Currency").on("keyup", function ()
+    {
+        validateCurrency();
+    });
+
+    $("#Currency").on("change", function ()
+    {
+        validateCurrency();
+    });
+
+    function validateUserName() {
+        var nameCtrl = $("#Name");
+        var name = $("#Name").val();
+        var pass = true;
+
+        nameCtrl.parent().removeClass('has-error');
+        nameCtrl.parent().removeClass('has-success');
+        nameCtrl.parent().find("small").remove();
+
+        if (name.length == 0)
+        {
+            nameCtrl.parent().addClass('has-error');
+            nameCtrl.parent().append('<small class="help-block" style="color: red;">Full Name is required</small>');
+            pass = false;
+        }
+        else if (name.length >= 6)
+        {
+            nameCtrl.parent().addClass('has-success');
+            nameCtrl.prop('disabled', false);
+        }
+        else {
+            nameCtrl.parent().addClass('has-error');
+            nameCtrl.parent().append('<small class="help-block" style="color: red;">Full Name must be atleast 6 characters long</small>');
+            pass = false;
+        }
+
+        return pass;
+    }
+
+    //function validateTelephone() {
+    //    var phoneCtrl = $("#Phone");
+    //    var telephone = $("#Phone").val();
+    //    var pass = true;
+
+    //    phoneCtrl.parent().removeClass('has-error');
+    //    phoneCtrl.parent().removeClass('has-success');
+    //    phoneCtrl.parent().find("small").remove();
+
+    //    if (telephone.length == 0) {
+    //        phoneCtrl.parent().addClass('has-error');
+    //        phoneCtrl.parent().append('<small class="help-block" style="color: red;">Phone Number is required</small>');
+    //        pass = false;
+    //    }
+    //    else if (/^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im.test(telephone)) {
+    //        phoneCtrl.parent().addClass('has-success');
+    //        phoneCtrl.prop('disabled', false);
+    //    }
+    //    else {
+    //        phoneCtrl.parent().addClass('has-error');
+    //        phoneCtrl.parent().append('<small class="help-block" style="color: red;">Invalid Phone Number</small>');
+    //        pass = false;
+    //    }
+    //    return pass;
+    //}
+    function validateTelephone() {
+        var isValid = false;
+        var telCntrl = $("#Phone");
+        var telCntrlVal = telCntrl.val();
+
+        telCntrl.parent().removeClass('has-error');
+        telCntrl.parent().removeClass('has-success');
+        telCntrl.parent().find("small").remove();
+
+        if (telCntrlVal.length == 0) {
+            telCntrl.parent().addClass('has-error');
+            telCntrl.parent().append('<small class="help-block" style="color: red;">Phone Number is required</small>');
+            isValid = false;
+        }
+        else {
+            if (validatePhoneNumber(telCntrlVal) == true) {
+                telCntrl.parent().addClass('has-success');
+                isValid = true;
+            }
+            else {
+                telCntrl.parent().addClass('has-error');
+                telCntrl.parent().append('<small class="help-block" style="color: red;">Please enter numbers and only + - / ( ) characters</small>');
+                isValid = false;
+            }
+        }
+
+        return isValid;
+    }
+
+
+
+    function validatePhoneNumber(phNo) {
+        var phoneno = /^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s\./0-9]*$/g
+        if (phNo.match(phoneno)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+
+    //function validateAddress() {
+    //    var address = $("#Address").val();
+    //    var pass = true;
+
+    //    if (address.length > 0) {
+    //        $("#valMsgAddress").html("");
+    //        $("#Address").removeClass("input-validation-error")
+    //    }
+    //    else {
+    //        $("#valMsgAddress").html("The Company Address field is required.");
+    //        $("#Address").addClass("input-validation-error")
+    //        pass = false;
+    //    }
+    //    return pass;
+    //}
+
+
+
+    function validateAddress()
+    {
+        var isValid = false;
+        var cmpNameCntrl = $("#Address");
+        var cmpNameVal = cmpNameCntrl.val();
+
+        cmpNameCntrl.parent().removeClass('has-error');
+        cmpNameCntrl.parent().removeClass('has-success');
+        cmpNameCntrl.parent().find("small").remove();
+
+        if (cmpNameVal == '') {
+            cmpNameCntrl.parent().addClass('has-error');
+            cmpNameCntrl.parent().append('<small class="help-block" style="color: red;">Address is required</small>');
+            isValid = false;
+        }
+        else {
+            cmpNameCntrl.parent().addClass('has-success');
+            cmpNameCntrl.prop('disabled', false);
+            isValid = true;
+        }
+
+        return isValid;
+    }
+
+
+
+
+
+    // 2023/Dec/07 
+    //function validateCountry()
+    //{
+    //    var countryCtrl = $("#Country");
+    //    var country = $("#Country").val();
+    //    var pass = true;
+
+    //    countryCtrl.parent().removeClass('has-error');
+    //    countryCtrl.parent().removeClass('has-success');
+    //    countryCtrl.parent().find("small").remove();
+
+    //    if (country.length > 0)
+    //    {
+    //        countryCtrl.parent().addClass('has-success');
+    //        countryCtrl.prop('disabled', false);
+    //    }
+    //    else
+    //    {
+    //        countryCtrl.parent().addClass('has-error');
+    //        countryCtrl.parent().append('<small class="help-block" style="color: red;">Country is required</small>');
+    //        pass = false;
+    //    }
+    //    return pass;
+    //}
+
+
+
+    // 2023/Dec/07 
+    //function validateCurrency()
+    //{
+    //    var currencyCtrl = $("#Currency");
+    //    var currency = $("#Currency").val();
+    //    var pass = true;
+
+    //    currencyCtrl.parent().removeClass('has-error');
+    //    currencyCtrl.parent().removeClass('has-success');
+    //    currencyCtrl.parent().find("small").remove();
+
+    //    if (currency.length > 0)
+    //    {
+    //        currencyCtrl.parent().addClass('has-success');
+    //        currencyCtrl.prop('disabled', false);
+    //    }
+    //    else
+    //    {
+    //        currencyCtrl.parent().addClass('has-error');
+    //        currencyCtrl.parent().append('<small class="help-block" style="color: red;">Currency is required</small>');
+    //        pass = false;
+    //    }
+    //    return pass;
+    //}
+
+
+
+
+
+    // 2023/Dec/07 
+    function validateCountry()
+    {
+        var isValid = false;
+        var countryCntrl = $("#Country");
+        var countryCntrlVal = countryCntrl.val();
+
+        countryCntrl.parent().removeClass('has-error');
+        countryCntrl.parent().removeClass('has-success');
+        countryCntrl.parent().find("small").remove();
+
+        if (countryCntrlVal.length == 0)
+        {
+            countryCntrl.parent().addClass('has-error');
+            countryCntrl.parent().append('<small class="help-block" style="color: red;">Country is required</small>');
+            isValid = false;
+        }
+        else
+        {
+            if (isValidCountry() == true)
+            {
+                countryCntrl.parent().addClass('has-success');
+                isValid = true;
+            }
+            else
+            {
+                countryCntrl.parent().addClass('has-error');
+                countryCntrl.parent().append('<small class="help-block" style="color: red;">Invalid Country</small>');
+                isValid = false;
+            }
+
+        }
+
+        return isValid;
+    }
+
+    // 2023/Dec/07 
+    function isValidCountry()
+    {
+        var isValid = false;
+        var countryVal = $("#Country").val().trim();
+
+        if (countryVal.length != 0 && countryVal != '')
+        {
+            var lstCountry = '@Html.Raw(Json.Encode(@HttpContext.Current.Session["CountryList"]))';
+            if (lstCountry != null)
+            {
+                var result = lstCountry.includes(countryVal);
+                if (result == true)
+                {
+                    isValid = true;
+                }
+            }
+        }
+
+        return isValid;
+    }
+
+
+
+    // 2023/Dec/07 
+    function validateCurrency()
+    {
+        var isValid = false;
+        var currencyCntrl = $("#Currency");
+        var currencyCntrlVal = currencyCntrl.val();
+
+        currencyCntrl.parent().removeClass('has-error');
+        currencyCntrl.parent().removeClass('has-success');
+        currencyCntrl.parent().find("small").remove();
+
+        if (currencyCntrlVal.length == 0)
+        {
+            currencyCntrl.parent().addClass('has-error');
+            currencyCntrl.parent().append('<small class="help-block" style="color: red;">Currency is required</small>');
+            isValid = false;
+        }
+        else
+        {
+            if (isValidCurrency() == true)
+            {
+                currencyCntrl.parent().addClass('has-success');
+                isValid = true;
+            }
+            else
+            {
+                currencyCntrl.parent().addClass('has-error');
+                currencyCntrl.parent().append('<small class="help-block" style="color: red;">Invalid Currency</small>');
+                isValid = false;
+            }
+
+        }
+
+        return isValid;
+    }
+
+    // 2023/Dec/07 
+    function isValidCurrency()
+    {
+        var isValid = false;
+        var currencyVal = $("#Currency").val().trim();
+
+        if (currencyVal.length != 0 && currencyVal != '')
+        {
+            var lstCurrency = '@Html.Raw(Json.Encode(@HttpContext.Current.Session["CurrencyList"]))';
+            if (lstCurrency != null)
+            {
+                var result = lstCurrency.includes(currencyVal);
+                if (result == true)
+                {
+                    isValid = true;
+                }
+            }
+        }
+
+        return isValid;
+    }
+
+
+
+</script>

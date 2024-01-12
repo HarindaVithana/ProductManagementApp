@@ -1,0 +1,313 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title> MyAZHRM - @ViewBag.Title </title>
+        @*<link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />*@
+        <meta name="viewport" content="width=device-width" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">        
+            
+        @*@Styles.Render("~/Content/css")*@
+        @*@Scripts.Render("~/bundles/modernizr")*@
+
+        @Styles.Render("~/CustomCSS/bootstrap.min.css", "~/CustomCSS/font-awesome.css", "~/CustomCSS/toastr.min.css", "~/CustomCSS/jquery.gritter.css", "~/CustomCSS/animate.css", "~/CustomCSS/style.css")
+    </head>
+    <body>
+        @if (Session["LoggedUsr"] != null)
+        {
+            @Html.Hidden("hdfLogUsrName", ((Session["LoggedUsr"] as MyAZHRM.Models.CustomerModel).Name))            
+        }
+        else
+        { 
+            @Html.Hidden("hdfLogUsrName", "")
+        }
+
+        <script>
+            var uname = document.getElementById("hdfLogUsrName").value;
+            if (uname == '' || uname == null) {
+                window.location.href = "/Account/Login";
+            }
+        </script>
+        <div id="wrapper">
+            <nav class="navbar-default navbar-static-side" role="navigation">
+                <div class="sidebar-collapse">
+                    <ul class="nav metismenu" id="side-menu">
+
+                        <li class="nav-header">
+                            <div class="dropdown profile-element">
+                                <img alt="image" class="rounded-circle" style="border-radius:0%!important;" src="~/Images/logo.png" />
+                                <a data-toggle="dropdown" class="dropdown-toggle" href="~/Home/Index">
+                                    <span class="block m-t-xs font-bold" id="Uname">
+
+                                     @*@((Session["LoggedUsr"] as MyAZHRM.Models.CustomerModel).Name)*@
+
+                                     @{
+                                         
+                                        if (Session["LoggedUsr"] != null)
+                                        {
+                                            @((Session["LoggedUsr"] as MyAZHRM.Models.CustomerModel).Name); 
+                                        }
+                                        @*else
+                                        {
+                                            <script>
+                                                window.location.replace("/");
+                                            </script>
+                                        }*@
+                                    }                                                                          
+                                    </span>
+                                </a>
+                            </div>
+                        </li>
+
+                        <li id="bbtn-prof">
+                            <a href="~/Profile/Index"><i class="fa fa-user"></i> <span class="nav-label">Profile</span> </a>
+                        </li>
+                        <li id="bbtn-prod">
+                            <a href="~/Products/MyProducts"><i class="fa fa-bar-chart-o"></i> <span class="nav-label">Products</span> </a>
+                        </li>
+                        <li id="bbtn-pay">
+                            <a href="~/Payment/Index"><i class="fa fa fa-credit-card"></i> <span class="nav-label">Payment Details</span> </a>
+                        </li>
+                    </ul>
+
+                </div>
+            </nav>
+
+            <div id="page-wrapper" class="gray-bg dashbard-1">
+                <div class="row border-bottom">
+                    <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+                        <div class="navbar-header">
+                            <a class="navbar-minimalize minimalize-styl-2 btn btn-primary" href="~/Home/Index"><i class="fa fa-bars"></i> </a>
+                        </div>
+                        <ul class="nav navbar-top-links navbar-right">
+                            <li style="padding: 20px">
+                                <span class="m-r-sm text-muted welcome-message">WELCOME</span>
+                            </li>
+
+                            <li>
+                                <a href="~/Account/LogOff">
+                                    <i class="fa fa-sign-out"></i> Sign out
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+
+                <div class="wrapper wrapper-content">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="row">
+                                @*<div class="col-lg-4">
+                                    <div class="ibox ">
+                                        <div class="ibox-title">
+                                            <h5>New data for the report</h5> <span class="label label-primary">IN+</span>
+                                            <div class="ibox-tools">
+                                                <a class="collapse-link" href="index.html">
+                                                    <i class="fa fa-chevron-up"></i>
+                                                </a>
+                                                <a class="dropdown-toggle" data-toggle="dropdown" href="index.html#">
+                                                    <i class="fa fa-wrench"></i>
+                                                </a>
+                                                <ul class="dropdown-menu dropdown-user">
+                                                    <li>
+                                                        <a href="index.html#" class="dropdown-item">Config option 1</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="index.html#" class="dropdown-item">Config option 2</a>
+                                                    </li>
+                                                </ul>
+                                                <a class="close-link" href="index.html">
+                                                    <i class="fa fa-times"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="ibox-content">
+                                            <div>
+
+                                                <div class="float-right text-right">
+
+                                                    <span class="bar_dashboard">5,3,9,6,5,9,7,3,5,2,4,7,3,2,7,9,6,4,5,7,3,2,1,0,9,5,6,8,3,2,1</span>
+                                                    <br />
+                                                    <small class="font-bold">$ 20 054.43</small>
+                                                </div>
+                                                <h4>
+                                                    NYS report new data!
+                                                    <br />
+                                                    <small class="m-r"><a href="graph_flot.html"> Check the stock price! </a> </small>
+                                                </h4>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>*@
+                                @*<div class="col-lg-8">
+
+                                </div>*@
+
+                                @RenderSection("featured", required: false)
+
+                                @*2023/Nov/20*@
+                                @*<section class="content-wrapper main-content clear-fix">*@
+                                    @RenderBody()
+                                @*</section>*@
+
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="footer gray-bg">
+                    <div style="text-align:center">
+                        <p>&copy; @DateTime.Now.Year - MyAZHRM</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*<header>
+            <div class="content-wrapper">
+                <div class="float-left">
+                    <p class="site-title">@Html.ActionLink("your logo here", "Index", "Home")</p>
+                </div>
+                <div class="float-right">
+                    <section id="login">
+                        @Html.Partial("_LoginPartial")
+                    </section>
+                    <nav>
+                        <ul id="menu">
+                            <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                            <li>@Html.ActionLink("About", "About", "Home")</li>
+                            <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </header>*@
+
+
+        @*<div id="body">
+            @RenderSection("featured", required: false)
+            <section class="content-wrapper main-content clear-fix">
+                @RenderBody()
+            </section>
+        </div>*@
+
+
+        @*<footer>
+            <div class="footer">
+                <div style="text-align:center">
+                    <p>&copy; @DateTime.Now.Year - MyAZHRM</p>
+                </div>
+            </div>
+
+        </footer>*@
+
+
+
+
+
+        @*2023/Nov/23 - Script Changes*@
+        @*@Scripts.Render("~/CustomJS/jquery")*@
+        @*@RenderSection("scripts", required: false)*@
+
+        @*2023/Nov/23 - Script Changes*@
+        <script src="~/CustomJS/jquery-3.1.1.min.js"></script>
+        <script src="~/CustomJS/popper.min.js"></script>
+        <script src="~/CustomJS/bootstrap.js"></script>
+        <script src="~/CustomJS/jquery.metisMenu.js"></script>
+        <script src="~/CustomJS/jquery.slimscroll.min.js"></script>
+        <script src="~/CustomJS/jquery.flot.js"></script>
+        <script src="~/CustomJS/jquery.flot.tooltip.min.js"></script>
+        <script src="~/CustomJS/jquery.flot.spline.js"></script>
+        <script src="~/CustomJS/jquery.flot.resize.js"></script>
+        <script src="~/CustomJS/jquery.flot.pie.js"></script>
+        <script src="~/CustomJS/jquery.peity.min.js"></script>
+        <script src="~/CustomJS/peity-demo.js"></script>
+        <script src="~/CustomJS/inspinia.js"></script>
+        <script src="~/CustomJS/pace.min.js"></script>
+        <script src="~/CustomJS/jquery-ui.min.js"></script>
+        <script src="~/CustomJS/jquery.gritter.min.js"></script>
+        <script src="~/CustomJS/jquery.sparkline.min.js"></script>
+        <script src="~/CustomJS/sparkline-demo.js"></script>
+        <script src="~/CustomJS/Chart.min.js"></script>
+        <script src="~/CustomJS/toastr.min.js"></script>
+        <script src="~/CustomJS/datatables.min.js"></script>
+
+        <script>
+
+            var url = document.location.href;
+            var array = url.split("/");
+            for (var i = 0; i < array.length; i++) 
+            {
+                if (array[i] == "Profile")
+                {
+                    $("#bbtn-prof").addClass("active");
+                }
+                else if (array[i] == "Products")
+                {
+                    $("#bbtn-prod").addClass("active");
+                }
+                else if (array[i] == "Payment")
+                {
+                    $("#bbtn-pay").addClass("active");
+                }
+            }
+        </script>
+    </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
