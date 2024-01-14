@@ -8,17 +8,13 @@ namespace MyAZHRM.Models
     public class ProductsModel
     {
         private int _id;
-        private int _customerId;
-        private int _packageId;
-        private string _companyName;
-        private int _employeeCount;
-        private string _currency;
-        private decimal _dueAmount;
+        private string _productName;
+        private string _SKU;
+        private DateTime _createdDate;
+        private decimal _retailPrice;
+        private decimal _salePrice;
+        private decimal _lowestPrice;
         private string _status;
-        private DateTime _activeDate;
-        private DateTime _nextBillingDate;
-        private DateTime _cancelledDate; 
-        private string _packageName;
 
         public int Id
         {
@@ -26,40 +22,10 @@ namespace MyAZHRM.Models
             get { return _id; }
         }
 
-        public int CustomerId
+        public string ProductName
         {
-            set { _customerId = value; }
-            get { return _customerId; }
-        }
-
-        public int PackageId
-        {
-            set { _packageId = value; }
-            get { return _packageId; }
-        }
-
-        public string CompanyName
-        {
-            set { _companyName = value; }
-            get { return _companyName; }
-        }
-
-        public int EmployeeCount
-        {
-            set { _employeeCount = value; }
-            get { return _employeeCount; }
-        }
-
-        public string Currency
-        {
-            set { _currency = value; }
-            get { return _currency; }
-        }
-
-        public decimal DueAmount
-        {
-            set { _dueAmount = value; }
-            get { return _dueAmount; }
+            set { _productName = value; }
+            get { return _productName; }
         }
 
         public string Status
@@ -68,31 +34,34 @@ namespace MyAZHRM.Models
             get { return _status; }
         }
 
-        public DateTime ActiveDate
+        public string SKU
         {
-            set { _activeDate = value; }
-            get { return _activeDate; }
+            set { _SKU = value; }
+            get { return _SKU; }
         }
 
-        public DateTime NextBillingDate
-        {
-            set { _nextBillingDate = value; }
-            get { return _nextBillingDate; }
+        public DateTime CreatedDate
+        { 
+            set { _createdDate = value; }
+            get { return _createdDate; }
         }
 
-        public DateTime CancelledDate
+        public decimal RetailPrice
         {
-            set { _cancelledDate = value; }
-            get { return _cancelledDate; }
+            set { _retailPrice = value;}
+            get { return _retailPrice; }
         }
 
-        public string PackageName
+        public decimal SalePrice
         {
-            set { _packageName = value; }
-            get { return _packageName; }
+            set { _salePrice = value;}
+            get { return _salePrice; }
         }
 
-
-
+        public decimal LowestPrice
+        {
+            set { _lowestPrice = value;}
+            get { return _lowestPrice; }
+        }
     }
 }

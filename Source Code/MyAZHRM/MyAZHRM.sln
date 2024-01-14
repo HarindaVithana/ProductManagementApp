@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyAZHRM", "MyAZHRM\MyAZHRM.csproj", "{6CEE0F1F-93AA-4971-844B-C7415A8C7586}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CEMEXHRM", "MyAZHRM\CEMEXHRM.csproj", "{6CEE0F1F-93AA-4971-844B-C7415A8C7586}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,5 +18,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B567F3BF-8B44-40B7-9C6E-BD514DFFE9B6}
 	EndGlobalSection
 EndGlobal

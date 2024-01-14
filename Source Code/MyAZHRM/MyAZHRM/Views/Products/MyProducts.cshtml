@@ -8,59 +8,48 @@
 
 <style>
 
-    .tblStyleRight 
-    {
+    .tblStyleRight {
         text-align: right !important;
         vertical-align: middle !important;
     }
 
-    .tblStyleLeft 
-    {
+    .tblStyleLeft {
         text-align: left !important;
         vertical-align: middle !important;
     }
 
-    .tblStyleCenter 
-    {
+    .tblStyleCenter {
         text-align: center !important;
         vertical-align: middle !important;
     }
 
-    .table 
-    {
-        color: #676a6c!important;
+    .table {
+        color: #676a6c !important;
     }
 
-    .tblCellStyleCenter 
-    {
-        text-align:center !important;
+    .tblCellStyleCenter {
+        text-align: center !important;
         vertical-align: middle !important;
         width: 30% !important;
         display: inline-block !important;
     }
 
-    .tblCellStyleRight 
-    {
+    .tblCellStyleRight {
         text-align: right !important;
         vertical-align: middle !important;
         width: 60% !important;
         display: inline-block !important;
     }
 
-    table 
-    {
+    table {
         counter-reset: tableCount;
     }
 
-    .counterCell:before 
-    {
+    .counterCell:before {
         content: counter(tableCount);
         counter-increment: tableCount;
     }
-
 </style>
-
-
 
 @*Common For All Pages*@
 @*<div class="row">
@@ -78,13 +67,13 @@
                 <thead>
                     <tr>
                         <th class="tblStyleCenter"> # </th>
-                        <th class="tblStyleCenter">Company Name</th>
-                        <th class="tblStyleCenter">Employee Count</th>
-                        <th class="tblStyleCenter">Package</th>
-                        <th class="tblStyleCenter">Due Amount</th>
-                        <th class="tblStyleCenter">Next Billing Date</th>
                         <th class="tblStyleCenter">Status</th>
-                        <th class="tblStyleCenter">Action</th>
+                        <th class="tblStyleCenter">Product Name</th>
+                        <th class="tblStyleCenter">SKU</th>
+                        <th class="tblStyleCenter">Created Date</th>
+                        <th class="tblStyleCenter">Retail Price</th>
+                        <th class="tblStyleCenter">Sale Price</th>
+                        <th class="tblStyleCenter">Lowest Price</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -94,46 +83,58 @@
                         <tr>
 
                             <td class="tblStyleCenter counterCell"> </td>
-                            <td class="tblStyleLeft"> @Html.DisplayFor(modelItem => item.CompanyName) </td>
-                            <td class="tblStyleCenter"> @Html.DisplayFor(modelItem => item.EmployeeCount) </td>
+                            <td class="tblStyleCenter">
+                                @*@Html.DisplayFor(modelItem => item.Status)*@
+                                @*<input type="hidden" value="@item.Id" id="input+@item.Id" />*@
+                                <div class="switch">
+                                    <div class="onoffswitch">
+                                        @if (item.Status == "Active")
+                                        {
+                                            <input type="checkbox" class="onoffswitch-checkbox" id="@item.Id" value="@item.Id" checked>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" class="onoffswitch-checkbox" id="@item.Id" value="@item.Id">
+                                        }
+                                        <label class="onoffswitch-label" for="@item.Id">
+                                            <span class="onoffswitch-inner"></span>
+                                            <span class="onoffswitch-switch"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="tblStyleCenter"> @Html.DisplayFor(modelItem => item.ProductName) </td>
 
-                            <td class="tblStyleLeft"> @Html.DisplayFor(modelItem => item.PackageName) </td>
+                            <td class="tblStyleLeft"> @Html.DisplayFor(modelItem => item.SKU) </td>
                             <td>
-                                 
+
                                 <div class="tblCellStyleCenter">
-                                    @Html.DisplayFor(modelItem => item.Currency)
+                                    @Html.DisplayFor(modelItem => item.CreatedDate)
                                 </div>
-                                 
+                            </td>
+                            <td>
                                 <div class="tblCellStyleRight">
-                                    @Convert.ToDecimal(item.DueAmount).ToString("#,##0.00")
+                                    @Convert.ToDecimal(item.RetailPrice).ToString("#,##0.00")
                                 </div>
 
                             </td>
 
-                            @*<td class="tblStyleCenter"> @Convert.ToDateTime(item.NextBillingDate).ToString("dd-MMM-yyyy") </td>*@
-                            
-                            <td class="tblStyleCenter"> 
-                                                    
-                              @if (item.NextBillingDate == Convert.ToDateTime(MyAZHRM.Models.Globals.DEFAULT_DATE))
-                              {
-                                @Convert.ToString("-") 
-                              }
-                              else
-                              { 
-                                @Convert.ToDateTime(item.NextBillingDate).ToString("dd-MMM-yyyy") 
-                              }
-                                                            
-                            </td>
+                            <td>
+                                <div class="tblCellStyleRight">
+                                    @Convert.ToDecimal(item.SalePrice).ToString("#,##0.00")
+                                </div>
 
-                            <td class="tblStyleCenter"> @Html.DisplayFor(modelItem => item.Status) </td>
-                            <td class="tblStyleCenter">                                                                                                                  
-                                @*<a href="@Url.Action("AddProduct", "Products", new { ProductId = item.Id, CmpName = item.CompanyName, EmpCount = item.EmployeeCount })"> <i class="fa fa-pencil-square-o" style="color: #1ab394; font-size: 24px;" title="Edit Details"> </i> </a>*@       
-                                <a href="@Url.Action("AddProduct", "Products", new { ProductId = item.Id, PackageId = item.PackageId })"> <i class="fa fa-pencil-square-o" style="color: #1ab394; font-size: 24px;" title="Edit Details"> </i> </a>                                                            
-                            </td>                      
+                            </td>
+                            <td>
+                                <div class="tblCellStyleRight">
+                                    @Convert.ToDecimal(item.LowestPrice).ToString("#,##0.00")
+                                </div>
+
+                            </td>
                         </tr>
                     }
                 </tbody>
-            </table>                   
+            </table>
         </div>
 
         <div class="form-group">
@@ -142,49 +143,59 @@
                 </div>
                 <div class="col-md-3">
                     <a href="~/Products/AddProduct" class="btn btn-primary block full-width m-b"> Add Product </a>
-                </div>                
+                </div>
             </div>
         </div>
 
 
     </div>
 </div>
-@*</div>
-</div>*@
-
-
-
-@*<td>
-        @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-        @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-        @Html.ActionLink("Delete", "Delete", new { id=item.Id })
-</td>*@
-
-@*<script src="~/CustomJS/DataTables/popper.min.js"></script>*@
-@*<script src="~/CustomJS/DataTables/bootstrap.js"></script>*@
-@*<script src="~/CustomJS/DataTables/jquery.metisMenu.js"></script>*@
-@*<script src="~/CustomJS/DataTables/jquery.slimscroll.min.js"></script>*@
-@*<script src="~/CustomJS/DataTables/inspinia.js"></script>*@
-@*<script src="~/CustomJS/DataTables/pace.min.js"></script>*@
-
-
-
-@*2023/Nov/23 - Script Changes*@
-@*<script src="~/CustomJS/DataTables/jquery-3.1.1.min.js"></script>*@
-@*<script src="~/CustomJS/DataTables/datatables.min.js"></script>*@
 <script src="~/CustomJS/jquery-3.1.1.min.js"></script>
 <script src="~/CustomJS/datatables.min.js"></script>
 
 <script type="text/javascript">
 
-    $(document).ready(function ()
-    {
+    $(document).ready(function () {
         $('#dtTblProducts').DataTable({
             pageLength: 10,
             lengthMenu: [10, 20, 30, 40, 50],
             responsive: true,
             language: { emptyTable: "No data found." }
         });
+    });
+
+
+    $('#dtTblProducts input[type=checkbox]').change(function () {
+
+        var id = $(this).val();
+        var isChecked = 0;
+        if (id != null) {
+            if ($('#' + id).is(':checked')) {
+                isChecked = 1;
+            }
+
+            $.ajax({
+                url: "/Products/UpdateStatus",
+                type: "POST",
+                dataType: "text",
+                data: { Id: id, isChecked: isChecked },
+                success: function (data) {
+                    if (data == "Success") {
+                        //var successMsg = "Status Successfully Updated";
+                        //swal("Success", successMsg, "success");
+                    }
+                    else {
+                        //var erMsg = data;
+                        //swal("Failed", erMsg, "error");
+                    }
+                },
+                error: function (data) {
+                    //var erMsg = data;
+                    //swal("Failed", erMsg, "error");
+                }
+            });
+        }
+        
     });
 
 </script>

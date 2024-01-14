@@ -14,10 +14,6 @@ namespace MyAZHRM.Controllers
     {
         private CustomerModel objCustomer = null;
         private Products objProducts = null;
-        private CustomerProductModel objCustProduct = null;
-        private Common objCommon = null;
-
-
 
         public ActionResult MyProducts()
         {
@@ -40,192 +36,76 @@ namespace MyAZHRM.Controllers
 
         public ActionResult AddProduct()
         {
-            List<PackageModulesModel> lstProducts = new List<PackageModulesModel>();
-            string strErMsg = string.Empty;
-
-            objCustomer = new CustomerModel();
-            if (Session["LoggedUsr"] != null)
-            {
-                objCustomer = (CustomerModel)Session["LoggedUsr"];
-            }
-
-            bool IsValidate = false;
-            if (Request.QueryString.HasKeys() == true)
-            {
-                if (ValidateQueryStrings(Request.QueryString["ProductId"].ToString().Trim(), Request.QueryString["PackageId"].ToString().Trim(), objCustomer.Id, ref strErMsg) == true)
-                {
-                    IsValidate = true;
-                }
-                else
-                {
-                    throw new HttpException(strErMsg);
-                }
-            }
-            else 
-            {
-                IsValidate = true;
-            }
-
-            if (IsValidate == true)
-            {
-                objProducts = new Products();
-                int intProductId = 0;
-                if (Request.QueryString["ProductId"] != null)
-                {
-                    intProductId = Convert.ToInt32(Request.QueryString["ProductId"]);
-                }
-
-                lstProducts = objProducts.GetPackageDetails(objCustomer, intProductId, ref strErMsg);
-            }
-            //else
-            //{
-            //    throw new HttpException(strErMsg);
-            //}
-
-            return View(lstProducts);
+            ProductsModel objProduct = new ProductsModel();
+            return View(objProduct);
         }
 
 
-
-        public ActionResult ProductDetails() 
+        [HttpPost]
+        [AllowAnonymous]
+        public string AddNewProduct(string prodVal, string skuVal, string retVal, string saledVal, string lowVal)
         {
-            //ViewBag.Message = "Product Details";
-            return View();
-        }
-
-
-
-        // ============================== Releated to AddProduct.cshtml =========================================================
-
-
-
-        public PartialViewResult CustomerProductDetails(int ProductId, int PackageId)
-        {
-            CustomerProductModel objCustProduct = new CustomerProductModel();
-            objCustomer = new CustomerModel();        
-            if (Session["LoggedUsr"] != null)
-            {
-                objCustomer = (CustomerModel)Session["LoggedUsr"];
-                string strErMsg = string.Empty;
-                objProducts = new Products();
-
-                if (ProductId != 0)
-                {
-                    objCustProduct = objProducts.GetCustomerProductById(ProductId, ref strErMsg);
-                }
-                else
-                {
-                    objCustProduct = objProducts.GetCustomerProductDetails(objCustomer.Id, PackageId, ProductId, ref strErMsg);
-                }
-            }
-
-            return PartialView("_CustomerProduct", objCustProduct);
-        }
-
-    
-
-        public JsonResult UpdProductDetails(CustomerProductModel CustomerProduct)
-        {
-            List<string> lstRsltMsgs = new List<string>();
-            List<CustomerProductModel> lstRsltObj = new List<CustomerProductModel>();
-            objCustProduct = new CustomerProductModel();
-
-            bool IsSuccess = false;
-            string strErMsg = string.Empty; 
-            int intLastRecord = 0;
-
-            if (CustomerProduct != null)
-            {
-                objProducts = new Products();
-                IsSuccess = objProducts.UpsertCustomerProduct(CustomerProduct, ref strErMsg, ref intLastRecord);
-
-                if (IsSuccess == true && string.IsNullOrEmpty(strErMsg) == true)
-                {
-                    int intProductId = 0;
-                    if (CustomerProduct.ProductId != 0)
-                    {
-                        intProductId = CustomerProduct.ProductId;
-                    }
-                    else
-                    {
-                        intProductId = intLastRecord;
-                    }
-
-                    objProducts = new Products();
-                    objCustProduct = objProducts.GetCustomerProductById(intProductId, ref strErMsg);
-                    // PartialView("_CustomerProduct", objCustProduct);
-                }
-            }
-            else
-            {
-                strErMsg = "No data found to update";
-            }
-
-            lstRsltMsgs.Add(IsSuccess.ToString().Trim());
-            lstRsltMsgs.Add(strErMsg.Trim());
-            lstRsltObj.Add(objCustProduct);
-
-            return Json(new { lstRslt1 = lstRsltMsgs, lstRslt2 = lstRsltObj }, JsonRequestBehavior.AllowGet);
-        }
-
-
-
-        public JsonResult CancelRequest(CancelledRequestsModel CancelRequest)
-        {
-            List<string> lstRsltMsgs = new List<string>();
-            bool IsSuccess = false;
-            string strErMsg = string.Empty;
-
-            if (CancelRequest != null)
-            {
-                CancelRequest.Date = DateTime.Now;
-                objProducts = new Products();
-                IsSuccess = objProducts.CancelRequest(CancelRequest, ref strErMsg);
-            }
-            else
-            {
-                strErMsg = "No data found to update";
-            }
-
-            lstRsltMsgs.Add(IsSuccess.ToString().Trim());
-            lstRsltMsgs.Add(strErMsg.Trim());
-            return Json(new { lstRslt1 = lstRsltMsgs }, JsonRequestBehavior.AllowGet);
-        }
-
-  
-
-        // Vlidate Product Id and Package Id
-        private bool ValidateQueryStrings(string strProductId, string strPackageId, int intCustomerId, ref string strErMsg)
-        {
-            bool IsSuccess = false;
-            objCommon = new Common();
+            string returnMsg = string.Empty;
+            ProductsModel objProduct = new ProductsModel();
             objProducts = new Products();
 
-            if (string.IsNullOrEmpty(Request.QueryString["ProductId"]) == true)
+
+            decimal numret;
+            decimal numsale;
+            decimal numlow;
+
+            if(decimal.TryParse(retVal, out numret) && decimal.TryParse(saledVal, out numsale) && decimal.TryParse(lowVal, out numlow))
             {
-                strErMsg = "Product Id cannot be null or empty.";
+                objProduct.ProductName = prodVal;
+                objProduct.SKU = skuVal;
+                objProduct.RetailPrice = numret;
+                objProduct.SalePrice = numsale;
+                objProduct.LowestPrice = numlow;
+                objProduct.CreatedDate = DateTime.Now;
+
+                bool isSubmit = objProducts.AddNewProduct(objProduct, ref returnMsg);
+
+                if(isSubmit)
+                {
+                    returnMsg = "Success";
+                }
             }
-            else if (string.IsNullOrEmpty(Request.QueryString["PackageId"]) == true)
+            else
             {
-                strErMsg = "Package Id cannot be null or empty.";
-            }
-            else if (objCommon.IsNumber(Request.QueryString["ProductId"].ToString().Trim()) == false)
-            {
-                strErMsg = "Invalid Product Id.";
-            }
-            else if (objCommon.IsNumber(Request.QueryString["PackageId"].ToString().Trim()) == false)
-            {
-                strErMsg = "Invalid Package Id.";
-            }
-            else if (objProducts.IsExistProdIdPackId(Convert.ToInt32(Request.QueryString["ProductId"].ToString().Trim()), Convert.ToInt32(Request.QueryString["PackageId"].ToString().Trim()), intCustomerId, ref strErMsg) == true)
-            {
-                IsSuccess = true;
+                returnMsg = "Invalid Values";
             }
 
-            return IsSuccess;
+            return returnMsg;
+
         }
 
+        [HttpPost]
+        [AllowAnonymous]
+        public string UpdateStatus(string Id, string isChecked)
+        {
+            string returnMsg = string.Empty;
+            ProductsModel objProduct = new ProductsModel();
+            objProducts = new Products();
 
+            objProduct.Id = Convert.ToInt32(Id);
+            
+            if(isChecked == "1")
+            {
+                objProduct.Status = "Active";
+            }
+            else
+            {
+                objProduct.Status = "Inactive";
+            }
 
+            bool isUpdate = objProducts.UpdateStatus(objProduct, ref returnMsg);
+
+            if(isUpdate)
+            {
+                returnMsg = "Success";
+            }
+
+            return returnMsg;
+        }
     }
 }

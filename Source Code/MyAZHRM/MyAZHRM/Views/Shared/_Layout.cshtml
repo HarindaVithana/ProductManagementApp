@@ -2,13 +2,9 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title> MyAZHRM - @ViewBag.Title </title>
-        @*<link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />*@
+        <title> CEMEX - @ViewBag.Title </title>
         <meta name="viewport" content="width=device-width" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge">        
-            
-        @*@Styles.Render("~/Content/css")*@
-        @*@Scripts.Render("~/bundles/modernizr")*@
 
         @Styles.Render("~/CustomCSS/bootstrap.min.css", "~/CustomCSS/font-awesome.css", "~/CustomCSS/toastr.min.css", "~/CustomCSS/jquery.gritter.css", "~/CustomCSS/animate.css", "~/CustomCSS/style.css")
     </head>
@@ -35,38 +31,19 @@
 
                         <li class="nav-header">
                             <div class="dropdown profile-element">
-                                <img alt="image" class="rounded-circle" style="border-radius:0%!important;" src="~/Images/logo.png" />
+                                <img alt="image" class="rounded-circle" style="border-radius:0%!important; height:100px; width:150px;" src="~/Images/pngwing.png" />
                                 <a data-toggle="dropdown" class="dropdown-toggle" href="~/Home/Index">
-                                    <span class="block m-t-xs font-bold" id="Uname">
-
-                                     @*@((Session["LoggedUsr"] as MyAZHRM.Models.CustomerModel).Name)*@
-
-                                     @{
-                                         
-                                        if (Session["LoggedUsr"] != null)
+                                    <span class="block m-t-xs font-bold" id="Uname">                                    
+                                        @if (Session["LoggedUsr"] != null)
                                         {
                                             @((Session["LoggedUsr"] as MyAZHRM.Models.CustomerModel).Name); 
-                                        }
-                                        @*else
-                                        {
-                                            <script>
-                                                window.location.replace("/");
-                                            </script>
-                                        }*@
-                                    }                                                                          
+                                        }                                                                       
                                     </span>
                                 </a>
                             </div>
                         </li>
-
-                        <li id="bbtn-prof">
-                            <a href="~/Profile/Index"><i class="fa fa-user"></i> <span class="nav-label">Profile</span> </a>
-                        </li>
                         <li id="bbtn-prod">
                             <a href="~/Products/MyProducts"><i class="fa fa-bar-chart-o"></i> <span class="nav-label">Products</span> </a>
-                        </li>
-                        <li id="bbtn-pay">
-                            <a href="~/Payment/Index"><i class="fa fa fa-credit-card"></i> <span class="nav-label">Payment Details</span> </a>
                         </li>
                     </ul>
 
@@ -97,60 +74,9 @@
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="row">
-                                @*<div class="col-lg-4">
-                                    <div class="ibox ">
-                                        <div class="ibox-title">
-                                            <h5>New data for the report</h5> <span class="label label-primary">IN+</span>
-                                            <div class="ibox-tools">
-                                                <a class="collapse-link" href="index.html">
-                                                    <i class="fa fa-chevron-up"></i>
-                                                </a>
-                                                <a class="dropdown-toggle" data-toggle="dropdown" href="index.html#">
-                                                    <i class="fa fa-wrench"></i>
-                                                </a>
-                                                <ul class="dropdown-menu dropdown-user">
-                                                    <li>
-                                                        <a href="index.html#" class="dropdown-item">Config option 1</a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="index.html#" class="dropdown-item">Config option 2</a>
-                                                    </li>
-                                                </ul>
-                                                <a class="close-link" href="index.html">
-                                                    <i class="fa fa-times"></i>
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div class="ibox-content">
-                                            <div>
-
-                                                <div class="float-right text-right">
-
-                                                    <span class="bar_dashboard">5,3,9,6,5,9,7,3,5,2,4,7,3,2,7,9,6,4,5,7,3,2,1,0,9,5,6,8,3,2,1</span>
-                                                    <br />
-                                                    <small class="font-bold">$ 20 054.43</small>
-                                                </div>
-                                                <h4>
-                                                    NYS report new data!
-                                                    <br />
-                                                    <small class="m-r"><a href="graph_flot.html"> Check the stock price! </a> </small>
-                                                </h4>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                </div>*@
-                                @*<div class="col-lg-8">
-
-                                </div>*@
 
                                 @RenderSection("featured", required: false)
-
-                                @*2023/Nov/20*@
-                                @*<section class="content-wrapper main-content clear-fix">*@
                                     @RenderBody()
-                                @*</section>*@
-
 
                             </div>
                         </div>
@@ -159,59 +85,11 @@
                 </div>
                 <div class="footer gray-bg">
                     <div style="text-align:center">
-                        <p>&copy; @DateTime.Now.Year - MyAZHRM</p>
+                        <p>&copy; @DateTime.Now.Year - CEMEX HRM</p>
                     </div>
                 </div>
             </div>
         </div>
-
-        @*<header>
-            <div class="content-wrapper">
-                <div class="float-left">
-                    <p class="site-title">@Html.ActionLink("your logo here", "Index", "Home")</p>
-                </div>
-                <div class="float-right">
-                    <section id="login">
-                        @Html.Partial("_LoginPartial")
-                    </section>
-                    <nav>
-                        <ul id="menu">
-                            <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                            <li>@Html.ActionLink("About", "About", "Home")</li>
-                            <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
-        </header>*@
-
-
-        @*<div id="body">
-            @RenderSection("featured", required: false)
-            <section class="content-wrapper main-content clear-fix">
-                @RenderBody()
-            </section>
-        </div>*@
-
-
-        @*<footer>
-            <div class="footer">
-                <div style="text-align:center">
-                    <p>&copy; @DateTime.Now.Year - MyAZHRM</p>
-                </div>
-            </div>
-
-        </footer>*@
-
-
-
-
-
-        @*2023/Nov/23 - Script Changes*@
-        @*@Scripts.Render("~/CustomJS/jquery")*@
-        @*@RenderSection("scripts", required: false)*@
-
-        @*2023/Nov/23 - Script Changes*@
         <script src="~/CustomJS/jquery-3.1.1.min.js"></script>
         <script src="~/CustomJS/popper.min.js"></script>
         <script src="~/CustomJS/bootstrap.js"></script>

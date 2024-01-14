@@ -62,46 +62,6 @@ namespace MyAZHRM.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Login(LoginModel model, string returnUrl)
         {
-            // 2023/Nov/17
-
-            ////2023/11/16--
-            //Common common = new Common();
-
-            ////2023/11/15--
-            ////if (ModelState.IsValid && WebSecurity.Login(model.UserName, model.Password, persistCookie: model.RememberMe))
-            //if (ModelState.IsValid && WebSecurity.Login(model.logEmail, model.Password, persistCookie: model.RememberMe))
-            //{
-            //    string Procedure = "SEL_CUSTOMER_LOGIN_DETAILS";
-            //    QueryParams emailparam = new QueryParams() { Name = "@Email", Value = model.logEmail };
-            //    QueryParams passparam = new QueryParams() { Name = "@Password", Value = model.Password };
-
-            //    List<QueryParams> paramList = new List<QueryParams>()
-            //    {
-            //        emailparam,
-            //        passparam
-            //    };
-            //    string strReturnCode = string.Empty;
-            //    string strMessage = string.Empty;
-            //    int intLastRecord = 0;
-            //    // Attempt to register the user
-            //    try
-            //    {
-            //        // Select From Db to db
-
-            //        //bool upsert = common.UPSERT(Procedure, paramList, ref strReturnCode, ref strMessage, ref intLastRecord);
-            //        //WebSecurity.CreateUserAndAccount(model.UserName, model.Password);
-            //        //WebSecurity.Login(model.UserName, model.Password);
-            //        return RedirectToAction("Index", "Home");
-            //    }
-            //    catch (MembershipCreateUserException e)
-            //    {
-            //        ModelState.AddModelError("", ErrorCodeToString(e.StatusCode));
-            //    }
-            //    //return RedirectToLocal(returnUrl);
-
-
-
-            // 2023/Nov/17
             objCommon = new Common();
             if (ModelState.IsValid)
             {
