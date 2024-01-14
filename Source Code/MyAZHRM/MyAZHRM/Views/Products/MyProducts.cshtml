@@ -108,8 +108,8 @@
                             <td class="tblStyleLeft"> @Html.DisplayFor(modelItem => item.SKU) </td>
                             <td>
 
-                                <div class="tblCellStyleCenter">
-                                    @Html.DisplayFor(modelItem => item.CreatedDate)
+                                <div class="tblCellStyleCenter" style="width:100% !important">
+                                    @item.CreatedDate.ToString("dd-MMM-yyyy")
                                 </div>
                             </td>
                             <td>
