@@ -110,11 +110,11 @@
         var isValidLow = validateLowPrice();
 
         if (isValidProd && isValidSKU && isValidRet && isValidSale && isValidLow) {
-            var prodVal = $("#ProductName").val();
-            var skuVal = $("#SKU").val();
-            var retVal = $("#RetailPrice").val();
-            var saledVal = $("#SalePrice").val();
-            var lowVal = $("#LowestPrice").val();
+            const prodVal = $("#ProductName").val();
+            const skuVal = $("#SKU").val();
+            const retVal = $("#RetailPrice").val();
+            const saledVal = $("#SalePrice").val();
+            const lowVal = $("#LowestPrice").val();
 
             $.ajax({
                 url: "/Products/AddNewProduct",
@@ -123,15 +123,8 @@
                 data: { prodVal: prodVal, skuVal: skuVal, retVal: retVal, saledVal: saledVal, lowVal: lowVal },
                 success: function (data) {
                     if (data == "Success") {
-                        $("#ProductName").val("");
-                        $("#SKU").val("");
-                        $("#RetailPrice").val(0);
-                        $("#SalePrice").val(0);
-                        $("#LowestPrice").val(0);
-
                         var successMsg = "Product Successfully Added";
                         swal("Success", successMsg, "success");
-
                     }
                     else {
                         var erMsg = data;
