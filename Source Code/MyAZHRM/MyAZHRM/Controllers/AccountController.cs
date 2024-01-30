@@ -108,7 +108,6 @@ namespace MyAZHRM.Controllers
 
                         Session["LoggedUsr"] = objCustomer;
 
-                        // 2023/Dec/12 - Remember Me 
                         if (model.RememberMe)
                         {
                             //create the authentication ticket
@@ -158,12 +157,7 @@ namespace MyAZHRM.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
-            //List<string> cList = RegisterCountryList();
-
-            //SelectList countrySelect = new SelectList(cList);
-            //ViewBag.CountryList = countrySelect;
-
-            // 2023/Dec/07 
+            RegisterModel model = new RegisterModel();
             CountryInfo objCountry = new CountryInfo();
             List<string> lstCountry = objCountry.getCountries();
             Session["CountryList"] = null;
@@ -174,7 +168,7 @@ namespace MyAZHRM.Controllers
             Session["CurrencyList"] = null;
             Session["CurrencyList"] = lstCurrency;
 
-            return View();
+            return View(model);
         }
 
         [HttpPost]
