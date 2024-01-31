@@ -19,7 +19,7 @@ namespace MyAZHRM.Helpers
         public Encryption()
         {
             UnicodeEncoding UE = new UnicodeEncoding();
-            key = UE.GetBytes("NekfaAustraliaPvtLtd==");
+            key = UE.GetBytes("testtest==");
             aesKey = SHA256Managed.Create().ComputeHash(key);
             aesIV = MD5.Create().ComputeHash(key);
         }

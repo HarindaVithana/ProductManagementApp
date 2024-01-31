@@ -23,14 +23,13 @@ namespace MyAZHRM.Controllers
         private Common objCommon = null;
 
         //Forget Password in login
-        //2023/11/15--
         [AllowAnonymous]
         public ActionResult forgetpassword()
         {            
             return View();
         }
-        // GET: /Account/Login
 
+        // Login view method 
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
@@ -56,7 +55,6 @@ namespace MyAZHRM.Controllers
 
         
         // POST: /Account/Login
-        //2023/11/16--
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -136,24 +134,18 @@ namespace MyAZHRM.Controllers
             return View(model);
         }
 
-        //
         // POST: /Account/LogOff
-
         [AllowAnonymous]
-        //[HttpGet]
         public ActionResult LogOff()
         {
-            //FormsAuthentication.SignOut();
-            //WebSecurity.Logout();
             Session.Clear();
             Session.RemoveAll();
             Session.Abandon();
             return RedirectToAction("Login", "Account");
         }
 
-        //
-        // GET: /Account/Register
 
+        // GET: /Account/Register
         [AllowAnonymous]
         public ActionResult Register()
         {

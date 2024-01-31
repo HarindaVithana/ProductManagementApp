@@ -91,7 +91,6 @@ namespace MyAZHRM.Helpers
                 {
                     SqlTrans.Rollback();
                     strReturnCode = "Error";
-                    //strMessage = "Action Unsuccessful.";
                 }
 
                 if (SqlCon != null)

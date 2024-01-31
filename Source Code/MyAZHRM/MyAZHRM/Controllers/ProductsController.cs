@@ -15,10 +15,9 @@ namespace MyAZHRM.Controllers
         private CustomerModel objCustomer = null;
         private Products objProducts = null;
 
+        // List of products view
         public ActionResult MyProducts()
         {
-            //ViewBag.Message = "My Products Details";
-
             List<ProductsModel> lstProducts = new List<ProductsModel>();
             objCustomer = new CustomerModel();
             if (Session["LoggedUsr"] != null)
@@ -33,14 +32,14 @@ namespace MyAZHRM.Controllers
         }
 
 
-
+        // Add product View
         public ActionResult AddProduct()
         {
             ProductsModel objProduct = new ProductsModel();
             return View(objProduct);
         }
 
-
+        // Add product request
         [HttpPost]
         [AllowAnonymous]
         public string AddNewProduct(string prodVal, string skuVal, string retVal, string saledVal, string lowVal)
@@ -79,6 +78,7 @@ namespace MyAZHRM.Controllers
 
         }
 
+        // Update product Status (Toggle Active/ Inactive)
         [HttpPost]
         [AllowAnonymous]
         public string UpdateStatus(string Id, string isChecked)
